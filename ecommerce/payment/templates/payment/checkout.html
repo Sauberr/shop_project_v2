@@ -1,0 +1,212 @@
+{% include "store/base.html" %}
+
+
+{% load static %}
+
+
+{% block content %}
+
+<style>
+
+    body
+    {
+
+        background-color: gray;
+
+    }
+
+
+</style>
+
+
+    <body>
+
+        <br>
+
+        <div class="container bg-white shadow-md p-5" style="width:500px; border-radius:20px;">
+
+            <form id="form">
+
+                <div>
+
+                    <h3> <i class="fa fa-chevron-circle-right" aria-hidden="true"></i> &nbsp; Complete your order </h3>
+
+                    <p> Please enter in the relevant information below. </p>
+
+
+
+                    <hr>
+
+                    <br>
+
+                    <div class="form-field">
+
+                        <input class="form-control validate" id="name" type="text" placeholder="Full name*" autocomplete="off" value="{{ shipping.full_name }}" required>
+
+                    </div>
+
+
+                    <br>
+
+
+                    <div class="form-field">
+
+                        <input class="form-control validate" id="email" type="email" placeholder="Email address*" autocomplete="off" value="{{ shipping.email }}" required>
+
+                    </div>
+
+
+                    <br>
+
+
+                    <div class="form-field">
+
+                        <input class="form-control validate" id="address1" type="text" placeholder="Address 1*" autocomplete="off" value="{{ shipping.address1 }}" required>
+
+                    </div>
+
+
+                    <br>
+
+
+                    <div class="form-field">
+
+                        <input class="form-control validate" id="address2" type="text" placeholder="Address 2*" autocomplete="off" value="{{ shipping.address2 }}" required>
+
+                    </div>
+
+
+                    <br>
+
+
+                    <div class="form-field">
+
+                        <input class="form-control validate" id="city" type="text" placeholder="City*" autocomplete="off" value="{{ shipping.city }}" required>
+
+                    </div>
+
+
+                    <br>
+
+
+                    <div class="form-field">
+
+                        <input class="form-control" id="state" type="text" placeholder="State (Optional)" autocomplete="off" value="{{ shipping.state }}">
+
+                    </div>
+
+
+                    <br>
+
+
+                    <div class="form-field">
+
+                        <input class="form-control" id="zipcode" type="text" placeholder="Zip code (Optional)" autocomplete="off" value="{{ shipping.zipcode }}">
+
+                    </div>
+
+                </div>
+
+                <br>
+
+
+
+               <button id="complete-order" type="submit" class="btn btn-primary navbar-btn text-white"> &nbsp; Complete order </button>
+
+
+                <br> <br>
+
+
+                <div id="paypal-button-container"></div>
+                <script src="https://www.paypal.com/sdk/js?client-id=AViFM_g_S_EyBgXIsU-k_4QiK8ZWGDcEax1_923d_rG48UOhsPhv8inLaAUUEE-8TverOEUKZneI2DQx&currency=USD"></script>
+
+
+            </form>
+
+
+        </div>
+
+
+
+<script>
+      paypal.Buttons({
+        // Order is created on the server and the order id is returned
+        createOrder() {
+          return fetch("/my-server/create-paypal-order", {
+            method: "POST",
+            headers: {
+              "Content-Type": "application/json",
+            },
+            // use the "body" param to optionally pass additional order information
+            // like product skus and quantities
+            body: JSON.stringify({
+              cart: [
+                {
+                  sku: "YOUR_PRODUCT_STOCK_KEEPING_UNIT",
+                  quantity: "YOUR_PRODUCT_QUANTITY",
+                },
+              ],
+            }),
+          })
+          .then((response) => response.json())
+          .then((order) => order.id);
+        },
+        // Finalize the transaction on the server after payer approval
+        onApprove(data) {
+          return fetch("/my-server/capture-paypal-order", {
+            method: "POST",
+            headers: {
+              "Content-Type": "application/json",
+            },
+            body: JSON.stringify({
+              orderID: data.orderID
+            })
+          })
+          .then((response) => response.json())
+          .then((orderData) => {
+            // Successful capture! For dev/demo purposes:
+            console.log('Capture result', orderData, JSON.stringify(orderData, null, 2));
+            const transaction = orderData.purchase_units[0].payments.captures[0];
+            alert(`Transaction ${transaction.status}: ${transaction.id}\n\nSee console for all available details`);
+            // When ready to go live, remove the alert and show a success message within this page. For example:
+            // const element = document.getElementById('paypal-button-container');
+            // element.innerHTML = '<h3>Thank you for your payment!</h3>';
+            // Or go to another URL:  window.location.href = 'thank_you.html';
+          });
+        }
+      }).render('#paypal-button-container');
+
+
+        // Complete checkout
+        $(document).on('submit', function(e) {
+            e.preventDefault();
+            $.ajax({
+                type: 'POST',
+                url: '{% url "payment:complete-order" %}',
+                data: {
+                    name: $('#name').val(),
+                    email: $('#email').val(),
+                    address1: $('#address1').val(),
+                    address2: $('#address2').val(),
+                    city: $('#city').val(),
+                    state: $('#state').val(),
+                    zipcode: $('#zipcode').val(),
+                    csrfmiddlewaretoken: "{{ csrf_token }}",
+                    action: 'post'
+                },
+
+                success: function(json){
+                    window.location.replace("{% url 'payment:payment-success' %}");
+
+                },
+
+                error: function(xhr, errmsg, err){
+                    window.location.replace("{% url 'payment:payment-failed' %}");
+                }
+
+        });
+    })
+</script>
+
+</body>
+{% endblock %}

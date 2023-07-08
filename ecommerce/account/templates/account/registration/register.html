@@ -1,0 +1,88 @@
+{% include 'store/base.html'  %}
+{% load static  %}
+{% load crispy_forms_tags %}
+
+{% block content %}
+
+    <style>
+        body {
+            background-color: grey;
+        }
+    </style>
+
+
+<body>
+    <br>
+    <div class="container bg-white shadow-md p-5 form-layout">
+        <h3> Create your account </h3>
+        <h5>Purchase your favourite items today!</h5>
+        <hr>
+        <br>
+        <form id="registration-form" method="post" autocomplete="off" action="{% url 'account:register' %}">
+            {% csrf_token %}
+            {{ form.username|as_crispy_field }}
+
+            <br> <br>
+
+            {{ form.email|as_crispy_field }}
+            <p id="error-mail"></p>
+
+            <br> <br>
+
+            {{ form.password1|as_crispy_field }}
+
+            <br> <br>
+
+            {{ form.password2|as_crispy_field }}
+
+            <br>
+
+            {{ form.captcha|as_crispy_field }}
+
+            <br>
+
+            <button type="submit" class="btn btn-secondary btn-lg w-100 btn-block p-2"> &nbsp; Create account </button>
+            <br> <br>
+            <div class="text-center">
+                <a href="{% url 'account:my-login' %}"> Already have an account </a>
+                <br>
+            </div>
+        </form>
+    </div>
+
+    <!-- Add jQuery library -->
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+
+<script>
+        // Check user email
+        $(document).ready(function() {
+            $('#registration-form').submit(function(event) {
+                event.preventDefault();
+                var email = $('#id_email').val();
+                $.ajax({
+                    method: 'POST',
+                    url: '{% url 'account:check-email' %}',
+                    data: {
+                        'email': email,
+                        'csrfmiddlewaretoken': '{{ csrf_token }}'
+                    },
+                    dataType: 'json',
+                    success: function(data) {
+                        if (data.exists) {
+                            $('#error-mail').text('This email is already in use.');
+                        } else {
+                            $('#registration-form')[0].submit();
+                        }
+                    },
+                    error: function(data) {
+                        console.log(data);
+                    }
+                });
+            });
+        });
+    </script>
+</body>
+
+
+
+{% endblock %}

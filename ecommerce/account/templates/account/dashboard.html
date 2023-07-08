@@ -1,0 +1,67 @@
+{% include 'store/base.html'  %}
+{% load static  %}
+{% load crispy_forms_tags %}
+
+{% block content %}
+
+
+    <style>
+        body {
+            background-color: grey;
+        }
+    </style>
+<body>
+    <br>
+    <div class="container bg-white shadow-md p-5 form-layout">
+        <h3> <i class="fa fa-address-book" aria-hidden="true"></i> Profile management </h3>
+        <hr>
+    </div>
+    <br>
+    <div class="container bg-white shadow-md p-5 form-layout">
+        <h3> Welcome, {{ user }}</h3>
+        <hr>
+        <p> This is your dashboard where you can perform any of the following:</p>
+        <li> Track your orders </li>
+        <li> Manage your account </li>
+        <li> Logout your account</li>
+        <br>
+        <br>
+    </div>
+
+    <br>
+
+    <div class="container bg-white shadow-md p-5 form-layout">
+        <h4> Track your orders </h4>
+        <hr>
+        <p> Track all of your orders here...</p>
+        <a class="btn btn-primary navbar-btn text-white" type="button"  href="{% url 'account:user-logout' %}"> Logout </a>
+    </div>
+
+    <br>
+
+    <div class="container bg-white shadow-md p-5 form-layout">
+        <h4> Manage your account </h4>
+        <br>
+         <p> Update or delete your account </p>
+        <a class="btn btn-primary navbar-btn text-white" type="button"  href="{% url 'account:user-logout' %}"> My orders </a>
+
+        <hr>
+        <br>
+        <a class="btn btn-primary navbar-btn text-white" type="button"  href="{% url 'account:profile-management' %}"> Profile management </a>
+        <br> <br>
+    </div>
+
+    <br>
+
+    <div class="container bg-white shadow-md p-5 form-layout">
+        <h4> Manage shipping </h4>
+         <hr>
+         <p> Enter in a shipping address </p>
+        <a class="btn btn-primary navbar-btn text-white" type="button"  href="{% url 'account:manage-shipping' %}"> Manage shipping </a>
+    </div>
+
+
+
+
+
+{% endblock %}

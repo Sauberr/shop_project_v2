@@ -13,20 +13,13 @@ class CreateUserForm(UserCreationForm):
         model = User
         fields = ['username', 'email', 'password1', 'password2']
     # Делает обезательным полем
+
     def __init__(self, *args, **kwargs):
         super(CreateUserForm, self).__init__(*args, **kwargs)
 
         self.fields['email'].required = True
 
-
-# Login form
-class LoginForm(AuthenticationForm):
-    username = forms.CharField(widget=TextInput())
-    password = forms.CharField(widget=PasswordInput())
-
-
-# Email validation
-
+    # Email validation
     def clean_email(self):
         email = self.cleaned_data.get("email")
         if User.objects.filter(email=email).exists():
@@ -35,6 +28,12 @@ class LoginForm(AuthenticationForm):
             raise forms.ValidationError('Your email is too long')
 
         return email
+
+
+# Login form
+class LoginForm(AuthenticationForm):
+    username = forms.CharField(widget=TextInput())
+    password = forms.CharField(widget=PasswordInput())
 
 
 # Update form

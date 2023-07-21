@@ -31,9 +31,11 @@ def cart_add(request):
         response = JsonResponse({'qty': cart_quantity})
         return response
 
+
 def cart_clear(request):
     del request.session['session_key']
     return redirect('cart:cart-summary')
+
 
 def cart_delete(request):
     cart = Cart(request)

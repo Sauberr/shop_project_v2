@@ -143,7 +143,7 @@
                          </div>
                     </form>
                 {% endif %}
-                        <form method="POST" action="{% url 'cart:cart-clear'}">
+                        <form method="POST" action="{% url 'cart:cart-clear' %}">
                             <input type="hidden" name="action" value="clear">
                             <br>
                             <button type="button" id="clear-button" class="btn btn-danger">Clear Cart</button>
@@ -168,7 +168,7 @@
 
 
 <script>
-
+        // Clear button
        $(document).on('click', '#clear-button', function(e) {
             e.preventDefault();
             $.ajax({
@@ -199,8 +199,8 @@
             data: form.serialize(),
             success: function(response) {
                 location.reload();
-                document.getElementById("cart-qty").textContent = response.qty;
-                document.getElementById("total").textContent = response.total;
+                document.getElementById("cart-qty").textContent = json.qty;
+                document.getElementById("total").textContent = json.total;
             },
             error: function(xhr, errmsg, err) {
                 // Handle errors
